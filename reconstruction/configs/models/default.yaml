@@ -1,0 +1,22 @@
+codex:
+  binary: codex
+  model: gpt-6-astra
+  reasoning_effort: high
+sam3:
+  checkpoint: null
+  confidence_threshold: 0.3
+flux2:
+  model_id: rootlocalghost/FLUX.2-klein-9B-FP8
+sam3d_objects:
+  root: thirdparty/sam-3d-objects
+foundation_pose:
+  root: thirdparty/FoundationPose
+foundation_stereo:
+  checkpoint: thirdparty/FoundationStereo/pretrained_models/23-51-11/model_best_bp2.pth
+umetrack:
+  root: thirdparty/UmeTrack
+  mano_dir: thirdparty/MANO/mano_data
+haco:
+  root: thirdparty/HACO_RELEASE
+  backbone: vit-b-16
+  checkpoint: thirdparty/HACO_RELEASE/release_checkpoint/haco_neurips_vit_b_checkpoint.ckpt

@@ -1,0 +1,5 @@
+{
+  "1": "/path/to/episode_000001/policy_250003456.safetensors",
+  "3": "/path/to/episode_000003/policy_250003456.safetensors"
+}
+

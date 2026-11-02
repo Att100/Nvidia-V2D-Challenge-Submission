@@ -1,0 +1,16 @@
+dynamic_objects:
+  strategy: contact_seeded_full_video_tracking
+  change_in_this_revision: false
+hands:
+  strategy: codex_canonical_bbox_short_text_bidirectional_tracking
+  change_in_this_revision: true
+  min_mask_area: 64
+  maximum_area_fraction: 0.15
+  confidence_threshold: 0.3
+  box_expand_ratio: 1.15
+  # Second pass uses the bbox obtained from continuous video tracking but
+  # segments every frame independently, limiting arm/sleeve propagation.
+  second_pass_box_expand_ratio: 1.05
+  duplicate_box_iou: 0.65
+  maximum_flip_run: 12
+  identity_gap: 5

@@ -1,0 +1,22 @@
+# Downloaded model checkpoints and license-controlled MANO/HACO numerical data.
+/thirdparty/FoundationStereo/pretrained_models/
+/thirdparty/FoundationPose/weights/
+/thirdparty/HACO_RELEASE/release_checkpoint/
+/thirdparty/UmeTrack/pretrained_models/
+/thirdparty/sam-3d-objects/checkpoints/
+
+# License-controlled MANO model files must never be published.
+/thirdparty/MANO/mano_data/MANO_LEFT.pkl
+/thirdparty/MANO/mano_data/MANO_RIGHT.pkl
+/thirdparty/HACO_RELEASE/data/base_data/human_models/mano/MANO_LEFT.pkl
+/thirdparty/HACO_RELEASE/data/base_data/human_models/mano/MANO_RIGHT.pkl
+/thirdparty/MANO/mano_data/mano_mean_params.npz
+/thirdparty/HACO_RELEASE/data/base_data/human_models/mano/V_regressor_84.npy
+/thirdparty/HACO_RELEASE/data/base_data/human_models/mano/V_regressor_336.npy
+
+# Generated reconstruction products and local model caches.
+/.cache/
+/outputs/
+/runs/
+__pycache__/
+*.py[codz]

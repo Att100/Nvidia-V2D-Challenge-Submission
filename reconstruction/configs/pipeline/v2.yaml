@@ -1,0 +1,169 @@
+name: v2
+contact_iterations: 800
+device: cuda
+codex_reasoning:
+  output_schema: configs/schemas/codex_hoi_reasoning.schema.json
+  timeout_seconds: 3600
+codex_bbox_transfer:
+  # Only objects/supports need native-RGB boxes. UmeTrack reconstructs hands
+  # directly in the rectified grayscale stereo cameras.
+  output_schema: configs/schemas/codex_cross_view_objects.schema.json
+  timeout_seconds: 1800
+  validation_masks: null
+sam3_object:
+  # One globally identified object is seeded at its Codex canonical frame/bbox.
+  prompt_mode: bbox_short_text
+  min_mask_area: 64
+  min_mask_area_fraction: 0.0
+object_mask_refinement:
+  # Remove hands/body from every rigid object. Resolve nested object masks in
+  # favour of the more specific instance; discard ambiguous intersections.
+  minimum_area: 64
+  containment_threshold: 0.50
+object_reference:
+  crop_size: 768
+  crop_context: 3.0
+sam3d_objects:
+  roles: [primary]
+support_objects:
+  # Static supports are never inserted into the dynamic mask. FoundationPose
+  # registers eight observations independently, then one object-to-world pose
+  # is selected and held fixed for the full moving-camera sequence.
+  pose_candidates: 8
+  est_refine_iter: 5
+  appearance_mode: grayscale
+  minimum_mask_area: 256
+  write_overlay: true
+  # Support assets use their own scale policy because large, partially
+  # occluded fixtures may need a different bound than interaction objects.
+  scale_mode: isotropic
+  max_anisotropy: 2.0
+  thickness_weight: 0.15
+object_scale:
+  # Preserve canonical mesh proportions; estimate one metric scale per object.
+  mode: isotropic
+  extent_quantile: 0.01
+  confidence_quantile: 0.01
+  thickness_weight: 0.15
+  max_anisotropy: 2.0
+stereo:
+  # ``anycalib`` estimates per-sequence calibration.  Set to ``public`` only
+  # for Track-3 videos recorded by the released OAK ego device; in that mode
+  # configure stream C as left and stream B as right.
+  calibration_source: anycalib
+  public_calibration_path: null
+  public_rectification_alpha: 0.0
+  # Optional mapping from Codex global IDs to already-metric released meshes.
+  # When non-empty, reference selection, FLUX and SAM3D generation are skipped.
+  public_object_meshes: {}
+  # Preserve released mesh geometry, UVs and materials.  Bound FoundationPose
+  # registration memory by chunking pose-hypothesis rendering instead.
+  foundation_pose_render_batch_size: 8
+  work_scale: 0.5
+  sample_count: 12
+  calibration_selection_mode: multi_frame_candidates
+  calibration_max_center_offset_fraction: 0.15
+  calibration_min_valid_fraction: 0.70
+  calibration_candidate_consensus_weight: 0.10
+  mask_dilation_pixels: 4
+  foundation_stereo_iters: 32
+  fusion_pixel_stride: 4
+  fusion_voxel_size_m: 0.01
+  foundation_pose_adaptive_reregister: false
+  foundation_pose_appearance_mode: grayscale
+  # Batch fixed-window pose experiments override this to true: FoundationPose
+  # then supplies only metric scale and the canonical-frame registration.
+  foundation_pose_registration_only: false
+  foundation_pose_write_overlay: true
+  foundation_pose_maximum_reregister_rotation_degrees: 25.0
+  foundation_pose_maximum_reregister_translation_meters: 0.03
+  foundation_pose_maximum_reregister_translation_fraction: 0.15
+  object_surface:
+    enabled: true
+    minimum_correspondences: 96
+    maximum_rotation_degrees: 5.0
+    maximum_translation_meters: 0.02
+    prior_weight: 0.20
+    velocity_weight: 8.0
+    acceleration_weight: 3.0
+    write_overlay: false
+  umetrack:
+    # SAM3 supplies rectified-left crop prompts only; UmeTrack consumes both
+    # rectified grayscale cameras and estimates metric articulated hands.
+    crop_margin: 1.20
+    minimum_mask_area: 80
+    maximum_scale_samples: 80
+  mano_fitting:
+    # One MANO shape/metric scale per hand and per-frame MANO articulation.
+    shape_iterations: 300
+    pose_iterations: 450
+    surface_iterations: 120
+    pose_basis: pca
+  joint_projection:
+    # Refine only per-frame rigid R/t against UmeTrack rectified-left joints;
+    # MANO shape, scale and articulation remain fixed.
+    iterations: 300
+    learning_rate: 0.02
+    rotation_prior_weight: 0.30
+    translation_prior_weight: 0.01
+    translation_acceleration_weight: 0.10
+    rotation_acceleration_weight: 0.10
+  hand_surface:
+    # Per-frame rigid visible-surface refinement against metric stereo depth.
+    # The UmeTrack/MANO articulation and physical scale remain fixed.
+    scale_mode: global
+    minimum_correspondences: 96
+    maximum_reprojection_increase_pixels: 2.0
+    # Prevent occlusion-biased ICP from trading UmeTrack metric depth for a
+    # smaller one-sided surface residual.
+    maximum_depth_median_increase_m: 0.002
+    maximum_depth_p90_increase_m: 0.005
+    minimum_depth_target_support: 5
+    se3_scope: per_frame
+  haco:
+    # Predict contacts on the final UmeTrack-fitted MANO surface. The fixed-hand
+    # object pass supplies a stable initializer to the joint final pass below.
+    enabled: true
+haco:
+  # UmeTrack and all stereo hand geometry live in rectified-left coordinates.
+  image_source: rectified_left
+  # A two-sequence rendered-IoU sweep found that 1.0 over-pulls objects toward
+  # the hand.  At 0.1 contact distance still improves while the median visible
+  # silhouette IoU stays within 0.02 of the input pose.
+  contact_weight: 0.1
+  # Only palm and finger-pad vertices may attract an object. Penetration is
+  # still evaluated against the complete active hand surface.
+  contact_region: palmar
+  palmar_maximum_normal_y: -0.10
+  batch_size: 32
+  threshold: 0.5
+  temporal_alpha: 0.8
+  minimum_component_vertices: 20
+  bbox_expand_ratio: 2.0
+  object_mask_dilation: 24
+  geometry_soft_radius: 0.03
+  geometry_soft_sigma: 0.04
+  geometry_maximum_distance: 0.15
+haco_joint:
+  # Final HACO stage jointly optimizes rigid object pose, hand SE(3), and MANO
+  # articulation. It also penalizes interaction-object and support-object
+  # interpenetration.
+  enabled: true
+  iterations: 800
+  hand_learning_rate: 0.001
+  articulation_prior_weight: 2.0
+  articulation_velocity_weight: 0.5
+  articulation_acceleration_weight: 1.0
+  hand_reprojection_weight: 2.0
+  optimize_hand_se3: true
+  hand_se3_learning_rate: 0.001
+  # Penalize actual negative-SDF samples between simultaneously present rigid
+  # objects. Surface contact inside the 1 mm tolerance remains free.
+  object_object_penetration_weight: 4.0
+  object_object_penetration_sigma: 0.003
+  object_object_penetration_tolerance: 0.001
+  object_object_surface_samples: 768
+  maximum_articulation_degrees: 12.0
+  silhouette_guard_median_tolerance: 0.05
+  silhouette_guard_p90_tolerance: 0.15
+  silhouette_guard_steps: 20

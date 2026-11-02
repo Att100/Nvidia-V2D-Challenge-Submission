@@ -1,0 +1,22 @@
+{
+  "schema_version": "track3-model-inventory-v1",
+  "checkpoints": [],
+  "download_guide": "docs/CHECKPOINTS.md",
+  "download_command": "bash scripts/download_checkpoints.sh all",
+  "validation_command": "python scripts/validate_bundle.py --require-checkpoints",
+  "automatic_downloads": [
+    "facebook/sam3",
+    "rootlocalghost/FLUX.2-klein-9B-FP8",
+    "Ruicheng/moge-vitl",
+    "AnyCalib anycalib_gen",
+    "VIPE DROID-SLAM"
+  ],
+  "external_services": [
+    {
+      "name": "Codex CLI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "local_weights": false
+    }
+  ]
+}

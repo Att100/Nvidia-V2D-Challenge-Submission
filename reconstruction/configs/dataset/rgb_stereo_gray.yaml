@@ -1,0 +1,13 @@
+name: rgb_stereo_gray
+input_mode: rgb_plus_stereo_grayscale
+streams:
+  # sequence.root is the native RGB video. These are synchronized grayscale views.
+  stereo_left: ???
+  stereo_right: ???
+camera:
+  use_ground_truth_extrinsics: false
+  horizontal_fov_degrees: 60.0
+  distortion_policy: anycalib_shared_intrinsics_then_stereo_rectification
+stereo:
+  baseline_m: 0.075
+orientation: upright

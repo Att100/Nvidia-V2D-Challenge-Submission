@@ -1,0 +1,13 @@
+name: ego_scene_hoi
+channels:
+  - https://repo.anaconda.com/pkgs/main
+  - https://repo.anaconda.com/pkgs/r
+dependencies:
+  - cmake
+  - python=3.12.13
+  - ffmpeg
+  - pkg-config
+  - suitesparse
+  - ninja
+  - pip
+  - ipykernel

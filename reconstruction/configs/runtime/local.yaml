@@ -1,0 +1,7 @@
+python_executable: null
+repository_root: ${hydra:runtime.cwd}
+worker_job_environment: EGO_SCENE_HOI_WORKER_JOB
+environments:
+  umetrack_hand_reconstruction:
+    # Resolve from the active Conda installation; no host-specific Python path.
+    conda_environment: umetrack

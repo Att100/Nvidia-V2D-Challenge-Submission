@@ -1,0 +1,9 @@
+contact_events: codex-hoi-contact-events-v2
+rectified_sequence: ego-scene-hoi-rectified-sequence-v2
+sam3_object_tracks: sam3-codex-canonical-object-tracks-v1
+global_object_masks: ego-scene-hoi-global-object-masks-v2
+object_reference: object-reference-selection-v2
+flux2_completion: flux2-object-completion-v2
+flux2_segmentation: flux2-sam3-resegmentation-v2
+sam3d_objects: sam3d-reference-candidates-v2
+cross_view_canonical_bbox: ego-scene-hoi-cross-view-canonical-bbox-v2

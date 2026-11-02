@@ -1,0 +1,45 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+kaggle.json
+*.pem
+*.key
+
+# Python and tool caches
+__pycache__/
+*.py[codz]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+
+# Generated reconstruction, grounding, and RL artifacts
+artifacts/
+outputs/
+results/
+submission/
+slurm-*.out
+*.safetensors
+*.ckpt
+*.pth
+*.pt
+*.onnx
+*.mp4
+*.webm
+*.glb
+*.obj
+*.ply
+*.stl
+*.urdf
+
+# The official kit contains required public templates of these types.
+*.parquet
+!robotic_grounding/third_party/v2d_submission_kit/v2d_submission_kit/data/*.parquet
+
+# Licensed MANO files and derived helper data are installed locally.
+reconstruction/thirdparty/MANO/mano_data/*
+!reconstruction/thirdparty/MANO/mano_data/.gitkeep
+reconstruction/thirdparty/HACO_RELEASE/data/base_data/human_models/mano/*
+!reconstruction/thirdparty/HACO_RELEASE/data/base_data/human_models/mano/.gitkeep
+

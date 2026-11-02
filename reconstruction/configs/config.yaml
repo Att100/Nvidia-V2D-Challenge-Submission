@@ -1,0 +1,32 @@
+defaults:
+  - dataset: rgb_stereo_gray
+  - pipeline: v2
+  - runtime: local
+  - models: default
+  - masks: default
+  - schemas: v2
+  - prompts: default
+  - _self_
+
+operation: run
+
+sequence:
+  root: ???
+  frame_count: ???
+
+output:
+  root: output/track3_run
+
+execution:
+  resume: true
+  force: false
+  dry_run: false
+  selected_stages: null
+  accept_legacy_artifacts: false
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: .
+  output_subdir: null

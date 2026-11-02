@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["objects", "support_objects"],
+  "$defs": {
+    "bbox": {
+      "type": "array",
+      "prefixItems": [
+        {"type": "integer"},
+        {"type": "integer"},
+        {"type": "integer"},
+        {"type": "integer"}
+      ],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "visibility": {
+      "type": "string",
+      "enum": ["fully_visible", "partially_occluded", "barely_visible"]
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["global_object_id", "frame", "rgb_bbox_xyxy", "visibility", "confidence"],
+      "properties": {
+        "global_object_id": {"type": "string"},
+        "frame": {"type": "integer", "minimum": 0},
+        "rgb_bbox_xyxy": {"$ref": "#/$defs/bbox"},
+        "visibility": {"$ref": "#/$defs/visibility"},
+        "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0}
+      }
+    }
+  },
+  "properties": {
+    "objects": {"type": "array", "items": {"$ref": "#/$defs/item"}},
+    "support_objects": {"type": "array", "items": {"$ref": "#/$defs/item"}}
+  }
+}

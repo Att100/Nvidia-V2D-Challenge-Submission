@@ -1,0 +1,351 @@
+{
+  "_comment": [
+    "Scored-episode rosters and leaderboard wiring for the V2D Challenge.",
+    "Editing this file is the supported way to change which episodes are scored, the",
+    "Public/Private split, the metric set, or the Kaggle competition slugs.",
+    "",
+    "family=object_pose: the participant submits the rolled-out object trajectory and the host",
+    "  recomputes every metric. Definition of record is flash_chord/evaluation/metrics.py.",
+    "",
+    "Track 2: the organizer confirmed that all three tiers score against the same clean multi-view reference; tier inputs differ.",
+    "worlds_per_episode: how many parallel evaluation worlds the submitted trajectory carries.",
+    "  evaluate_policy.py defaults to world_count=4096, but under reset_mode=explicit every world",
+    "  resets to the same frame and runs a deterministic policy, so the cohort is expected to be",
+    "  redundant and only one world is submitted. Raise this if that turns out to be wrong; the",
+    "  schema already carries a world_index and needs no code change.",
+    "",
+    "accepted_eval_script_sha256 / accepted_eval_code_sha256: allowlists of released evaluator",
+    "  digests. The script hash covers evaluate_policy.py and is stable; the code hash covers the",
+    "  evaluation modules and is what changes when the scoring maths changes. A submission",
+    "  reporting anything else is rejected. An empty list disables that check. Adding a hash needs",
+    "  a new metric-notebook version AND re-selecting it on each competition, and does NOT rescore",
+    "  existing submissions, so only ever append.",
+    "private_fraction is 0: every scored row appears on Kaggle's Public leaderboard. Reference data may still be confidential, depending on the track."
+  ],
+  "hf_repo": "nvidia/video_to_data_challenge",
+  "mirror": "/data/v2d_challenge_data_public",
+  "accepted_eval_script_sha256": [],
+  "accepted_eval_code_sha256": [],
+  "metric_display": {
+    "add_auc": {
+      "display": "AUC",
+      "higher_is_better": true,
+      "unit": ""
+    },
+    "spider_sr": {
+      "display": "SP-SR",
+      "higher_is_better": true,
+      "unit": ""
+    },
+    "maniptrans_sr": {
+      "display": "MP-SR",
+      "higher_is_better": true,
+      "unit": ""
+    },
+    "rpe_cm": {
+      "display": "RPE",
+      "higher_is_better": false,
+      "unit": "cm"
+    },
+    "mppe_cm": {
+      "display": "MPPE",
+      "higher_is_better": false,
+      "unit": "cm"
+    },
+    "cd_h_cm": {
+      "display": "CD-H",
+      "higher_is_better": false,
+      "unit": "cm"
+    },
+    "cd_o_cm": {
+      "display": "CD-O",
+      "higher_is_better": false,
+      "unit": "cm"
+    },
+    "acc_h_cm": {
+      "display": "ACC-H",
+      "higher_is_better": false,
+      "unit": "cm"
+    },
+    "acc_o_cm": {
+      "display": "ACC-O",
+      "higher_is_better": false,
+      "unit": "cm"
+    },
+    "interpenetration_cm": {
+      "display": "PEN",
+      "higher_is_better": false,
+      "unit": "cm"
+    }
+  },
+  "tracks": {
+    "track_1": {
+      "title": "Track 1 - Reconstruction",
+      "family": "mhr",
+      "submission_format": "parquet",
+      "data_root": "track_1",
+      "scored_episodes": "all",
+      "private_fraction": 0,
+      "min_stretch_frames": 8,
+      "object_mesh_faces": 4096,
+      "object_mesh_vertices": 4096,
+      "metrics": [
+        "cd_h_cm",
+        "cd_o_cm",
+        "acc_h_cm",
+        "acc_o_cm",
+        "interpenetration_cm"
+      ],
+      "competitions": {
+        "cd_h_cm": "v2d-challenge-track1-cd-h",
+        "cd_o_cm": "v2d-challenge-track1-cd-o",
+        "acc_h_cm": "v2d-challenge-track1-acc-h",
+        "acc_o_cm": "v2d-challenge-track1-acc-o",
+        "interpenetration_cm": "v2d-challenge-track1-pen"
+      },
+      "participant_data_path": "track_1",
+      "reference_available": false,
+      "unimplemented_metrics": [],
+      "short_title": "Track 1",
+      "align_initial_pose": false,
+      "gt_root": "/data/v2d_track1_gt/extracted/pseudo_gt_30_sequences/sequences",
+      "object_mesh_root": "/data/v2d_track1_gt/extracted/pseudo_gt_30_sequences/sequences_watertight_astra",
+      "provenance_columns": [
+        "code_commit_url"
+      ]
+    },
+    "track_2_tier1": {
+      "title": "Track 2 - Robotic Grounding (Tier 1: multi-view input)",
+      "family": "object_pose",
+      "data_root": "track_2/baseline",
+      "mesh_root": "track_2/baseline/mesh",
+      "tier": "tier1",
+      "scored_episodes": "all",
+      "private_fraction": 0,
+      "worlds_per_episode": 1,
+      "metrics": [
+        "add_auc",
+        "spider_sr",
+        "maniptrans_sr",
+        "mppe_cm"
+      ],
+      "competitions": {
+        "add_auc": "v2d-challenge-track2-tier1-auc",
+        "spider_sr": "v2d-challenge-track2-tier1-sp-sr",
+        "maniptrans_sr": "v2d-challenge-track2-tier1-mp-sr",
+        "mppe_cm": "v2d-challenge-track2-tier1-mppe"
+      },
+      "participant_data_path": "track_2/tier_1_multiview_caption",
+      "short_title": "Track 2 \u00b7 Tier 1",
+      "reference": "multi_view_ground_truth",
+      "input_path": "track_2/tier_1_multiview_caption",
+      "input_note": "Use the original SOMA-X human and object reconstruction in the released Tier 1 multiview-caption dataset. This is the clean trajectory used as the configured scoring reference.",
+      "align_initial_pose": false
+    },
+    "track_2_tier2": {
+      "title": "Track 2 - Robotic Grounding (Tier 2: synthetically corrupted input)",
+      "family": "object_pose",
+      "data_root": "track_2/baseline",
+      "mesh_root": "track_2/baseline/mesh",
+      "tier": "tier2",
+      "scored_episodes": "all",
+      "private_fraction": 0,
+      "worlds_per_episode": 1,
+      "metrics": [
+        "add_auc",
+        "spider_sr",
+        "maniptrans_sr",
+        "mppe_cm"
+      ],
+      "competitions": {
+        "add_auc": "v2d-challenge-track2-tier2-auc",
+        "spider_sr": "v2d-challenge-track2-tier2-sp-sr",
+        "maniptrans_sr": "v2d-challenge-track2-tier2-mp-sr",
+        "mppe_cm": "v2d-challenge-track2-tier2-mppe"
+      },
+      "participant_data_path": "track_2/tier_2_synthetic_noise",
+      "short_title": "Track 2 \u00b7 Tier 2",
+      "reference": "multi_view_ground_truth",
+      "input_path": "track_2/tier_2_synthetic_noise",
+      "input_note": "Use the released Tier 2 synthetic-noise trajectories. Human and object poses are perturbed while episode timing, videos, visibility, identity parameters, and meshes are preserved. The configured scoring reference is the clean Tier 1 object trajectory.",
+      "align_initial_pose": false
+    },
+    "track_2_tier3": {
+      "title": "Track 2 - Robotic Grounding (Tier 3: bring your own reconstruction)",
+      "family": "object_pose",
+      "data_root": "track_2/baseline",
+      "mesh_root": "track_2/baseline/mesh",
+      "tier": "tier3",
+      "scored_episodes": "all",
+      "private_fraction": 0,
+      "worlds_per_episode": 1,
+      "metrics": [
+        "add_auc",
+        "spider_sr",
+        "maniptrans_sr",
+        "mppe_cm"
+      ],
+      "competitions": {
+        "add_auc": "v2d-challenge-track2-tier3-auc",
+        "spider_sr": "v2d-challenge-track2-tier3-sp-sr",
+        "maniptrans_sr": "v2d-challenge-track2-tier3-mp-sr",
+        "mppe_cm": "v2d-challenge-track2-tier3-mppe"
+      },
+      "participant_data_path": "track_2",
+      "short_title": "Track 2 \u00b7 Tier 3",
+      "reference": "multi_view_ground_truth",
+      "input_path": null,
+      "input_note": "No trajectory is supplied. Reconstruct the sequences yourself from the videos, by whatever method you prefer, and drive your policy from that. The tier is method-agnostic on purpose: the reconstruction is part of what you are being judged on, and you are scored against the clean multi-view trajectory regardless of how you got there.",
+      "align_initial_pose": false
+    },
+    "track_3": {
+      "title": "Track 3 - Egocentric",
+      "family": "object_pose",
+      "data_root": "track_3/confidential_holdout",
+      "mesh_root": "track_3/confidential_holdout/mesh",
+      "scored_episodes": [
+        1,
+        3,
+        5,
+        6,
+        8,
+        10,
+        14,
+        15,
+        16,
+        19,
+        20,
+        25,
+        28,
+        30,
+        32,
+        33,
+        35,
+        36,
+        37,
+        38
+      ],
+      "private_fraction": 0,
+      "worlds_per_episode": 1,
+      "metrics": [
+        "add_auc",
+        "spider_sr",
+        "maniptrans_sr",
+        "rpe_cm",
+        "mppe_cm"
+      ],
+      "competitions": {
+        "add_auc": "v2d-challenge-track3-auc",
+        "spider_sr": "v2d-challenge-track3-sp-sr",
+        "maniptrans_sr": "v2d-challenge-track3-mp-sr",
+        "rpe_cm": "v2d-challenge-track3-rpe",
+        "mppe_cm": "v2d-challenge-track3-mppe"
+      },
+      "participant_data_path": "track_3/evaluation",
+      "short_title": "Track 3",
+      "align_initial_pose": true,
+      "reference_available": false,
+      "scored_episodes_note": "The 20 holdout episodes whose egocentric videos are released in track_3/evaluation. The holdout's other 5 (4, 7, 9, 17, 34) have ground truth but no released video, so they cannot be scored.",
+      "register_object_mesh": true,
+      "submission_format": "parquet",
+      "object_mesh_vertices": 4096,
+      "object_mesh_faces": 4096,
+      "axially_symmetric_objects": [
+        "beige_cup",
+        "blue_cup"
+      ],
+      "half_turn_symmetric_objects": [
+        "white_pot_lid"
+      ]
+    },
+    "track_3_mesh": {
+      "title": "Track 3 - Egocentric (object reconstruction)",
+      "family": "object_mesh",
+      "leaderboard_group": "track_3",
+      "leaderboard_group_note": "Its own Kaggle competition, because a mesh per (episode, object) has nothing in common with the per-frame pose rows the other Track 3 metrics score; the aggregator shows it as a column of the Track 3 table.",
+      "data_root": "track_3/confidential_holdout",
+      "mesh_root": "track_3/confidential_holdout/mesh",
+      "scored_episodes": [
+        1,
+        3,
+        5,
+        6,
+        8,
+        10,
+        14,
+        15,
+        16,
+        19,
+        20,
+        25,
+        28,
+        30,
+        32,
+        33,
+        35,
+        36,
+        37,
+        38
+      ],
+      "private_fraction": 0,
+      "object_mesh_faces": 4096,
+      "object_mesh_vertices": 4096,
+      "submission_format": "parquet",
+      "metrics": [
+        "cd_o_cm"
+      ],
+      "competitions": {
+        "cd_o_cm": "v2d-challenge-track3-cd-o"
+      },
+      "participant_data_path": "track_3/evaluation",
+      "short_title": "Track 3",
+      "provenance_columns": [
+        "code_commit_url"
+      ]
+    }
+  },
+  "dataset_url": "https://huggingface.co/datasets/nvidia/video_to_data_challenge",
+  "challenge_url": "https://nvidia-isaac.github.io/video_to_data/v2d_challenge/",
+  "contact_email": "v2d_challenge@nvidia.com",
+  "timeline": {
+    "launch": "September 21",
+    "freeze": "November 4, 2026 at 5:00 p.m. EST",
+    "announced": "November 12",
+    "venue": "our CoRL 2026 tutorial",
+    "submission_limit": "five times per week, with unlimited submissions during the final three days",
+    "_comment": "The official challenge site currently states November 4, 2026 at 5:00 p.m. EST. Align each Kaggle competition deadline before launch."
+  },
+  "rules": {
+    "_comment": [
+      "Fields for the competition-specific half of the Kaggle rules. Anything left null is",
+      "rendered as a loud NEEDS DECISION marker rather than guessed, because these are legal",
+      "terms and a plausible-looking wrong one is worse than an obvious gap.",
+      "",
+      "Disagreements between this, the challenge website and the live Kaggle settings are",
+      "resolved in favour of the WEBSITE, because that is what participants read before they",
+      "enter. Where the website promises something Kaggle cannot express, the rules state the",
+      "website's policy and note the mechanism; see submission_policy.",
+      "",
+      "max_team_size and max_daily_submissions are what the competition is CONFIGURED with, and",
+      "tools/verify_competitions.py errors if a live competition differs. Neither is settable",
+      "through the API, so both are set by hand in the Kaggle UI."
+    ],
+    "sponsor": "NVIDIA Corporation",
+    "sponsor_address": "2788 San Tomas Expressway, Santa Clara, California 95051, USA",
+    "max_team_size": 10,
+    "max_daily_submissions": 5,
+    "max_final_submissions": 2,
+    "total_prizes": "To be announced (TBA).",
+    "prize_breakdown": null,
+    "winner_license": "custom",
+    "data_use": "commercial",
+    "data_license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "governing_law": "California, litigated in the Federal or State courts of Santa Clara County, California, USA",
+    "submission_policy": "five (5) Submissions per week, with unlimited Submissions during the final three (3) days of the Competition Period",
+    "winner_license_type": "Open Source (Apache License, Version 2.0)",
+    "winner_license_text": "Your winning Submission and the source code used to generate it must be publicly released under\nthe Apache License, Version 2.0, as required by Section 2.9.e. Apache-2.0 is approved by the Open\nSource Initiative and does not limit commercial use.\n\nThe Competition Sponsor receives no licence in your Submission beyond the rights that public\nrelease grants to everyone. You are not required to grant the Competition Sponsor any separate,\nadditional, or exclusive licence, and no assignment of ownership is required or implied.\n\nFor generally commercially available software that you used to generate your Submission that is\nnot owned by you, but that can be procured by the Competition Sponsor without undue expense, you\ndo not need to release that software under the licence above.\n\nIn the event that input data or pretrained models with an incompatible licence are used to\ngenerate your winning solution, you do not need to release that data or those models under the\nlicence above.",
+    "code_release_license": "the Apache License, Version 2.0",
+    "code_release_license_url": "https://www.apache.org/licenses/LICENSE-2.0"
+  },
+  "registration_url": "https://docs.google.com/forms/d/e/1FAIpQLSdZJYNsEPPGDeIRH2yb_Dui-lWcIxWRF2CON7UOIijzCw8zyA/viewform"
+}

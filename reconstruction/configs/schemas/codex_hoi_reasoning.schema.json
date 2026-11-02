@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["num_interactions", "objects", "support_objects", "hands", "interactions"],
+  "properties": {
+    "num_interactions": {"type": "integer", "minimum": 0},
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "sam3_prompt", "canonical"],
+        "properties": {
+          "id": {"type": "integer", "minimum": 0},
+          "name": {"type": "string", "minLength": 1},
+          "sam3_prompt": {"type": "string", "minLength": 1},
+          "canonical": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["frame", "bbox_xyxy"],
+            "properties": {
+              "frame": {"type": "integer", "minimum": 0},
+              "bbox_xyxy": {
+                "type": "array",
+                "prefixItems": [
+                  {"type": "integer"},
+                  {"type": "integer"},
+                  {"type": "integer"},
+                  {"type": "integer"}
+                ],
+                "minItems": 4,
+                "maxItems": 4
+              }
+            }
+          }
+        }
+      }
+    },
+    "support_objects": {
+      "type": "array",
+      "description": "Static scene objects that physically support an interacted object but are not themselves a primary hand-interaction target.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "sam3_prompt", "canonical"],
+        "properties": {
+          "id": {"type": "integer", "minimum": 0},
+          "name": {"type": "string", "minLength": 1},
+          "sam3_prompt": {"type": "string", "minLength": 1},
+          "canonical": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["frame", "bbox_xyxy"],
+            "properties": {
+              "frame": {"type": "integer", "minimum": 0},
+              "bbox_xyxy": {
+                "type": "array",
+                "prefixItems": [
+                  {"type": "integer"},
+                  {"type": "integer"},
+                  {"type": "integer"},
+                  {"type": "integer"}
+                ],
+                "minItems": 4,
+                "maxItems": 4
+              }
+            }
+          }
+        }
+      }
+    },
+    "hands": {
+      "type": "array",
+      "description": "Canonical observations for the camera wearer's anatomical hands, split at visibility discontinuities.",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["side", "canonicals"],
+        "properties": {
+          "side": {"type": "string", "enum": ["left", "right"]},
+          "canonicals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["frame", "bbox_xyxy"],
+              "properties": {
+                "frame": {"type": "integer", "minimum": 0},
+                "bbox_xyxy": {
+                  "type": "array",
+                  "prefixItems": [
+                    {"type": "integer"},
+                    {"type": "integer"},
+                    {"type": "integer"},
+                    {"type": "integer"}
+                  ],
+                  "minItems": 4,
+                  "maxItems": 4
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "interactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "hand", "object", "frame_interval"],
+        "properties": {
+          "id": {"type": "integer", "minimum": 0},
+          "hand": {"type": "string", "enum": ["left", "right"]},
+          "object": {"type": "integer", "minimum": 0},
+          "frame_interval": {
+            "type": "array",
+            "prefixItems": [
+              {"type": "integer", "minimum": 0},
+              {"type": "integer", "minimum": 0}
+            ],
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      }
+    }
+  }
+}

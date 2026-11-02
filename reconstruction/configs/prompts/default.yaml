@@ -1,0 +1,124 @@
+hoi_reasoning:
+  name: codex_whole_video_hoi_reasoning
+  template: |-
+    Analyze the complete egocentric video below by inspecting the actual video with
+    shell, ffprobe/ffmpeg, Python, and image-inspection tools. Do not infer content
+    from the filename and do not modify project source code. Temporary inspection
+    artifacts may be written only under {output_dir}.
+
+    Video: {video_path}
+    Native metadata: {num_frames} frames, {fps} FPS, {width}x{height} pixels.
+
+    Identify every physical hand-object interaction and build one globally
+    consistent physical-object registry across the entire video. Repeated
+    interactions with the same physical instance must reference the same object ID.
+    Distinct instances must have distinct IDs even when their semantic category is
+    identical. Use contiguous zero-based object and interaction IDs.
+
+    Each interaction is an atomic inclusive frame interval for exactly one
+    anatomical hand (left or right) and one object. Two hands touching the same
+    object simultaneously are two interactions. Split when hand identity, physical
+    object instance, or physical contact state changes. Do not count visual overlap,
+    reaching, or proximity without contact.
+
+    For every physical object, choose one global canonical frame where that exact
+    instance is maximally visible, sharp, minimally occluded, and representative of
+    its complete shape for single-view 3D reconstruction. Return a tight half-open
+    xyxy bounding box [x_min,y_min,x_max,y_max] in the original {width}x{height}
+    frame coordinates. Also provide a concise SAM3 noun-phrase prompt describing
+    only the object. Inspect contact boundaries and canonical candidates densely at
+    native frame rate before finalizing them.
+
+    In the same reasoning pass, identify only the camera wearer's anatomical left
+    and right hands. Never select a bystander's hand. For each wearer hand, return
+    canonical observations suitable for identity-preserving segmentation. Each
+    observation contains a sharp, well-exposed, minimally occluded frame and a
+    tight half-open xyxy bounding box in the original {width}x{height} coordinates.
+    The box must contain the hand through the wrist while excluding as much forearm,
+    sleeve, contacted object, and other person's body as possible. If a hand leaves
+    the image, becomes fully occluded, or cannot be followed continuously and later
+    reappears, return one additional canonical observation after every such
+    reappearance. Do not add redundant observations within one continuous
+    visibility segment. Use anatomical handedness rather than screen side. A wearer
+    hand that never appears must have an empty canonicals array. Return exactly one
+    left-hand record and one right-hand record.
+
+    Also identify static support objects in the scene. A support object is not a
+    primary hand-interaction target, but physically supports one or more interacted
+    objects, for example a shelf, rack, tray, or stand. Do not return tables, desks,
+    worktops, counters, or other large planar furniture: their severe occlusion and
+    incomplete single-view geometry make them unsuitable for this reconstruction
+    branch. Also do not include walls, floors, background furniture that supports
+    nothing relevant, the human body, or an object already present in the
+    interacting-object registry. For every distinct
+    static support instance, return its name, a concise SAM3 noun-phrase prompt, and
+    one best canonical frame with a tight half-open xyxy bounding box. Choose a frame
+    where the support is maximally visible and minimally occluded. Support objects
+    are stationary for the complete sequence, so do not return frame intervals for
+    them. Use contiguous zero-based support-object IDs independent of interacting
+    object IDs. Return an empty support_objects array only when no relevant static
+    support is visible.
+
+    Produce the interacting-object registry, atomic interactions, wearer-hand
+    canonicals, and static support registry from this single inspection of the
+    video. Return only the JSON object required by the supplied output schema. Do
+    not emit Markdown, prose, timestamps, resized-image coordinates, or additional
+    keys.
+
+canonical_bbox_transfer:
+  name: codex_cross_view_canonical_bbox_transfer
+  template: |-
+    The evidence manifest at {evidence_manifest} contains {item_count} canonical
+    observations: {object_count} interacting objects and {support_count} static
+    support objects. Hand observations are intentionally excluded because hand
+    reconstruction remains in the stereo cameras. For every listed object it
+    provides two synchronized images from the exact
+    same frame: (1) a rectified grayscale left-camera image with the known object
+    marked by a green source bounding box, and (2) the native RGB camera image.
+
+    Inspect every listed image with image-viewing tools. Use the marked source image
+    only to identify the exact physical object.
+    Independently localize that same target in the RGB image. The cameras have different viewpoints,
+    intrinsics, resolutions, distortion, and cropping, so never resize, copy, scale,
+    or project the source coordinates. Return a tight half-open xyxy box in the
+    native target RGB coordinates, whose valid range is {rgb_width}x{rgb_height}.
+    Include every original object ID and frame unchanged. If partially occluded,
+    bound the full visible target extent. Do not include a hand merely because it
+    overlaps the object.
+    Every listed observation must be localized; if it cannot be found, inspect both
+    images again rather than copying the source-camera coordinates.
+
+    Keep interacting objects and support objects in the two separate arrays required
+    by the schema. Each object/support has exactly one canonical record. Return only the JSON
+    required by the supplied schema, with exactly one result for every manifest
+    observation and no Markdown or prose.
+
+hand_canonical_reasoning:
+  name: codex_rgb_ego_hand_canonical_reasoning
+  template: |-
+    Analyze the complete synchronized egocentric RGB video below by inspecting the
+    actual video with shell, ffprobe/ffmpeg, Python, and image-inspection tools. Do
+    not infer content from the filename and do not modify project source code.
+    Temporary inspection artifacts may be written only under {output_dir}.
+
+    Video: {video_path}
+    Native metadata: {num_frames} frames, {fps} FPS, {width}x{height} pixels.
+
+    Identify only the camera wearer's anatomical left and right hands. Never select
+    a bystander's hand, even when it is larger or has higher visibility. For each
+    wearer hand, return canonical observations suitable for identity-preserving
+    video segmentation. Each observation contains one frame where that hand is
+    sharp, well exposed, minimally occluded, and a tight half-open xyxy bounding box
+    [x_min,y_min,x_max,y_max] in the original {width}x{height} RGB coordinates.
+    The box must contain the hand through the wrist and exclude as much forearm,
+    sleeve, contacted object, and other person's body as possible.
+
+    If a wearer hand leaves the image, becomes fully occluded, or cannot be followed
+    continuously and later reappears, return an additional canonical observation
+    after every such reappearance. Do not add redundant observations inside one
+    continuous visibility segment. Use anatomical handedness rather than screen
+    side. A hand that never appears must have an empty canonicals array.
+
+    Inspect candidate frames densely at native frame rate. Return only the JSON
+    object required by the supplied output schema, without Markdown, prose,
+    timestamps, resized-image coordinates, or additional keys.

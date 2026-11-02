@@ -1,0 +1,86 @@
+{
+ "_comment": [
+  "The objects in every scored Track 3 evaluation episode (track_3/evaluation videos).",
+  "Order is the reference's object order, i.e. object_slot in the pose metrics; it is NOT",
+  "always sorted by name. For CD-O, name each mesh file after its object:",
+  "  <meshes>/episode_000003/<object_name>.glb  (see tools/pack_reconstruction.py)."
+ ],
+ "episodes": {
+  "1": [
+   "white_pot",
+   "white_pot_lid"
+  ],
+  "3": [
+   "white_pot",
+   "wooden_spoon"
+  ],
+  "5": [
+   "white_pot",
+   "wooden_spoon"
+  ],
+  "6": [
+   "white_pot",
+   "wooden_spoon"
+  ],
+  "8": [
+   "beige_cup",
+   "white_pot"
+  ],
+  "10": [
+   "blue_cup",
+   "beige_cup"
+  ],
+  "14": [
+   "blue_cup",
+   "plastic_dish_rack"
+  ],
+  "15": [
+   "plastic_dish_rack",
+   "wooden_spoon"
+  ],
+  "16": [
+   "plastic_dish_rack",
+   "wooden_spoon"
+  ],
+  "19": [
+   "mini_sweeper",
+   "mini_dust_pan"
+  ],
+  "20": [
+   "blue_cup",
+   "water_pitcher"
+  ],
+  "25": [
+   "wooden_piece_1",
+   "wooden_piece_2"
+  ],
+  "28": [
+   "plastic_dish_rack",
+   "white_pot"
+  ],
+  "30": [
+   "mini_sweeper",
+   "plastic_dish_rack"
+  ],
+  "32": [
+   "blue_cup",
+   "wooden_spoon"
+  ],
+  "33": [
+   "blue_cup",
+   "wooden_spoon"
+  ],
+  "35": [
+   "wooden_spoon"
+  ],
+  "36": [
+   "wooden_spoon"
+  ],
+  "37": [
+   "wooden_spoon"
+  ],
+  "38": [
+   "mini_dust_pan"
+  ]
+ }
+}
