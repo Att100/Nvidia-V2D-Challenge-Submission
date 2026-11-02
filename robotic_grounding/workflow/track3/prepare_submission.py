@@ -89,9 +89,6 @@ def stage_meshes(
     mesh_paths: list[Path],
     slot_map: dict[int, int],
 ) -> None:
-    import pyarrow as pa
-    import pyarrow.parquet as pq
-
     episode_root = output_root / f"episode_{episode:06d}"
     episode_root.mkdir(parents=True, exist_ok=True)
     for internal_slot, public_slot in slot_map.items():
@@ -112,6 +109,9 @@ def normalize_trajectory(
     public_names: list[str],
     slot_map: dict[int, int],
 ) -> None:
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
     table = pq.read_table(source)
     required = {"object_id", "object_body_id", "object_body_name"}
     missing = required - set(table.column_names)
